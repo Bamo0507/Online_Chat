@@ -122,8 +122,9 @@
                 border: 2px solid var(--primary-color);
             }
             /* Enviar texto */
+            /* Fixed Position */
             .enviar_texto {
-                display: flex;
+                display: fixed;
                 flex-direction: column;
                 justify-content: start;
                 align-items: start;
@@ -132,10 +133,17 @@
                 margin: 0px 20px;
             }
             
-            .enviar_texto p {
+            .enviar_texto h2 {
                 font-size: var(--font-size-l);
                 font-weight: var(--font-weight-bold);
                 margin-bottom: 5px;
+            }
+
+            .enviar_texto p {
+                font-size: var(--font-size-m);
+                font-weight: var(--font-weight-semibold);
+                margin-bottom: 10px;
+                margin-left: 5px;
             }
             
             .enviar_texto .texto {
@@ -179,6 +187,16 @@
                 background-color: var(--secondary-color);
                 color: var(--header-background);
             }
+            
+            /* Mensaje de error */
+            .enviar_texto #mensajeError {
+                display: none;
+                color: var(--error-color);
+                font-size: var(--font-size-s);
+                font-weight: var(--font-weight-bold);
+                margin-top: 5px;
+                transition: 0.5s ease;
+            }
 
         `;
         document.head.appendChild(styleElement);
@@ -196,22 +214,43 @@
             </div>
 
             <div class="enviar_texto">
-                <p>Text Input</p>
+                <h2>Text Input</h2>
+
+                <p>Cantidad de Caracteres: </p>
+
                 <div class="texto">
                     <input type="text" id="texto" placeholder="Hello World!">
                     <button id="enviar">Enviar</button>
                 </div>
-                
+                <span id="mensajeError">Maximo 140 caracteres!</span>
                 
             </div>
         `;
         document.body.appendChild(mainElement);
 
+
+        // Limitar caracteres
+        const input = document.getElementById('texto');
+        const mensajeError = document.getElementById('mensajeError');
+        const maxCaracteres = 140;
+
+        input.addEventListener('input', () => {
+            if (input.value.length > maxCaracteres) {
+                mensajeError.style.display = 'inline';
+                input.value = input.value.slice(0, maxCaracteres); // Corta el exceso
+            } else {
+                mensajeError.style.display = 'none';
+            }
+        });
+
+        // Actualizar contador de caracteres
+        input.addEventListener('input', () => {
+            const cant_caracteres = document.querySelector('.enviar_texto p');
+            cant_caracteres.innerHTML = `Cantidad de Caracteres: ${input.value.length}`;
+        });
+
         
-
-
-    
-      
+ 
     </script>
   </body>
 </html>
