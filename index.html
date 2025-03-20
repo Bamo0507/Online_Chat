@@ -249,7 +249,20 @@
             cant_caracteres.innerHTML = `Cantidad de Caracteres: ${input.value.length}`;
         });
 
-        
+        // Funcion de boton enviar mensaje
+        function enviarMensaje(){
+            alert('Mensaje enviado');
+        }
+
+        const enviar = document.getElementById('enviar');
+        enviar.addEventListener('click', enviarMensaje);
+
+        // Agregar listener a boton enter para enviar
+        input.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                enviarMensaje();
+            }
+        });
  
     </script>
   </body>
