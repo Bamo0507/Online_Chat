@@ -1,0 +1,217 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <script type="application/javascript">
+        // Generar style
+        const styleElement = document.createElement('style');
+        styleElement.innerHTML = `
+          /* Importar otro tipo de FONT */
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Tektur:wght@400..900&display=swap');
+
+            /* Variables */
+            :root {
+                --background-color: #deebf7;
+
+                --background-header: #151e3d;
+
+                --primary-color: #007aa2;
+                --secondary-color: #86beda;
+                --tertiary-color: #f5fbff;
+
+                --error-color: #950606;
+
+                --white-color: #fff;
+
+                /* Font Weight */
+                --font-weight-normal: 400;
+                --font-weight-medium: 500;
+                --font-weight-semibold: 600;
+                --font-weight-bold: 700;
+
+
+                /* Font size */
+                --font-size-s: 0.9rem;
+                --font-size-n: 1rem;
+                --font-size-m: 1.12rem;
+                --font-size-l: 1.5rem;
+                --font-size-xl: 2rem;
+                --font-size-xxl: 2.6rem;
+
+                /* Border radius */
+                --border-radius-s: 8px;
+                --border-radius-m: 30px;
+                --border-radius-circle: 50%;
+
+                /* Site max width */
+                --site-max-width: 1300px;
+            }
+            /* ----------------------------------- */
+
+            /* Styles 4 the Entire Page */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Poppins", serif;
+            }
+
+            /* Body para el background */
+            body {
+                background: var(--background-color)
+            }
+
+            /* Como quiero que me ordene todo lo del main */
+            main {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                min-height: 100vmin;
+            }
+
+            ul {
+                list-style: none;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            button {
+                cursor: pointer;
+                border: none;
+                background: none;
+            }
+            /* ------------------------------------------ */
+
+            /* Background */
+            body {
+                background: var(--background-color);
+            }
+
+            /* Header */
+            header {
+                background-color: var(--background-header);
+                color: var(--white-color);
+                text-align: center;
+                height: 15vmin;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: var(--font-size-xxl);
+                padding: 4rem;
+            }
+
+            header h1 {
+                font-family: "Tektur", serif;
+                text-align: center;
+                text-transform: uppercase;
+                font-weight: var(--font-weight-bold);
+                margin: 0;
+            }
+
+            /* Main */
+            /* Mensajes */
+            .mensajes {
+                background-color: var(--tertiary-color);
+                border-radius: var(--border-radius-m);
+                height: 60vmin;
+                width: 80vmin;
+                margin: 30px 20px;
+                padding: 20px;
+                border: 2px solid var(--primary-color);
+            }
+            /* Enviar texto */
+            .enviar_texto {
+                display: flex;
+                flex-direction: column;
+                justify-content: start;
+                align-items: start;
+                height: 50vmin;
+                width: 80vmin;
+                margin: 0px 20px;
+            }
+            
+            .enviar_texto p {
+                font-size: var(--font-size-l);
+                font-weight: var(--font-weight-bold);
+                margin-bottom: 5px;
+            }
+            
+            .enviar_texto .texto {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                width: 100%;
+            }
+            
+            .enviar_texto .texto input {
+                width: 65%;
+                height: 50px;
+                border-radius: var(--border-radius-s);
+                border: 2px solid var(--primary-color);
+                padding: 0 10px;
+                font-size: var(--font-size-m);
+                font-weight: var(--font-weight-medium);
+
+                transition: 0.5s ease;
+            }
+
+            .enviar_texto .texto input:focus {
+                outline: none;
+                border: 2px solid var(--secondary-color);
+            }
+            
+            .enviar_texto .texto button {
+                width: 32%;
+                height: 50px;
+                border-radius: var(--border-radius-s);
+                background-color: var(--primary-color);
+                color: var(--white-color);
+                font-size: var(--font-size-m);
+                font-weight: var(--font-weight-bold);
+
+                transition: 0.5s ease;
+            }
+
+            .enviar_texto .texto button:hover {
+                background-color: var(--secondary-color);
+                color: var(--header-background);
+            }
+
+        `;
+        document.head.appendChild(styleElement);
+
+        // Generar header
+        const headerElement = document.createElement('header');
+        headerElement.innerHTML = '<h1> Ping/Pong </h1>';
+        document.body.appendChild(headerElement);
+
+        // Generar main
+        const mainElement = document.createElement('main');
+        mainElement.innerHTML = `
+            <div class="mensajes">
+                <ul id="lista-mensajes"></ul>
+            </div>
+
+            <div class="enviar_texto">
+                <p>Text Input</p>
+                <div class="texto">
+                    <input type="text" id="texto" placeholder="Hello World!">
+                    <button id="enviar">Enviar</button>
+                </div>
+                
+                
+            </div>
+        `;
+        document.body.appendChild(mainElement);
+
+        
+
+
+    
+      
+    </script>
+  </body>
+</html>
