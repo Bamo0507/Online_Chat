@@ -3,6 +3,12 @@
   </head>
   <body>
     <script type="application/javascript">
+        // /////////////////////////////////////////////////////////////////////////////////
+        // Title
+        const title = document.createElement('title');
+        title.textContent = 'Ping/Pong';
+        document.head.appendChild(title);
+        // /////////////////////////////////////////////////////////////////////////////////
         // Generar style
         const styleElement = document.createElement('style');
         styleElement.innerHTML = `
@@ -127,7 +133,7 @@
                 flex-direction: column;
                 justify-content: flex-end;
             }
-                
+
             /* Enviar texto */
             .enviar_texto {
                 flex-direction: column;
@@ -232,6 +238,7 @@
                 background: var(--secondary-color);
                 border-radius: var(--border-radius-m);
                 padding: 10px;
+                padding-left: 20px;
                 margin: 10px 0;
                 font-size: var(--font-size-n);
                 font-weight: var(--font-weight-semibold);
@@ -247,12 +254,14 @@
 
         `;
         document.head.appendChild(styleElement);
+        // /////////////////////////////////////////////////////////////////////////////////
 
-        // Generar header
-        const headerElement = document.createElement('header');
-        headerElement.innerHTML = '<h1> Ping/Pong </h1>';
-        document.body.appendChild(headerElement);
+        // /////////////////////////////////////////////////////////////////////////////////
+        
 
+        // /////////////////////////////////////////////////////////////////////////////////
+
+        // /////////////////////////////////////////////////////////////////////////////////
         // Generar main
         const mainElement = document.createElement('main');
         mainElement.innerHTML = `
@@ -276,67 +285,125 @@
             </div>
         `;
         document.body.appendChild(mainElement);
+        // /////////////////////////////////////////////////////////////////////////////////
 
-
-        // Limitar caracteres
+        // /////////////////////////////////////////////////////////////////////////////////
+        // Referencias a inputs
+        const usernameInput = document.getElementById('username');
         const input = document.getElementById('texto');
         const mensajeError = document.getElementById('mensajeError');
+        const cant_caracteres = document.querySelector('.enviar_texto p');
+        const enviar = document.getElementById('enviar');
         const maxCaracteres = 140;
+        // /////////////////////////////////////////////////////////////////////////////////
 
+        // /////////////////////////////////////////////////////////////////////////////////
+        // Limitar caracteres
         input.addEventListener('input', () => {
+            cant_caracteres.innerHTML = `Cantidad de Caracteres: ${input.value.length}`;
             if (input.value.length > maxCaracteres) {
                 mensajeError.style.display = 'inline';
-                input.value = input.value.slice(0, maxCaracteres); // Corta el exceso
+                input.value = input.value.slice(0, maxCaracteres);
             } else {
                 mensajeError.style.display = 'none';
             }
         });
 
-        // Actualizar contador de caracteres
-        const cant_caracteres = document.querySelector('.enviar_texto p');
-        const enviar = document.getElementById('enviar');
+        // /////////////////////////////////////////////////////////////////////////////////
 
-        input.addEventListener('input', () => {
-            cant_caracteres.innerHTML = `Cantidad de Caracteres: ${input.value.length}`;
-        });
-
-        // Funcion para manejar el input
-        function validateInput(input) {
-            if (input.value.trim() !== '') {
-                enviarMensaje(input.value);
-                input.value = '';
-            }
-        }
-        enviar.addEventListener('click', () => {
-           validateInput(input);
-        });
-
-        // Agregar listener a boton enter para enviar
-        input.addEventListener('keyup', (event) => {
-            if (event.key === 'Enter') {
-                validateInput(input);
-            }
-        });
-
-        // Agregar mensaje a la lista
-        function enviarMensaje(texto){
-            cant_caracteres.innerHTML = `Cantidad de Caracteres: 0`;
+        // /////////////////////////////////////////////////////////////////////////////////
+        // Función para renderizar el mensaje en la UI
+        function renderMensaje(username, texto) {
             const listaMensajes = document.getElementById('lista-mensajes');
             const nuevoMensaje = document.createElement('li');
 
-            if (/\.(jpe?g|png\gif)$/i.test(texto)) {
-                const imagen = document.createElement('img');
+            const usernameElement = document.createElement('span');
+            usernameElement.textContent = username;
+            usernameElement.style.fontWeight = 'bold';
 
-                imagen.src = texto;
-                nuevoMensaje.appendChild(imagen);
+            const saltoLinea = document.createElement('br');
+
+            const mensajeElement = document.createElement('span');
+            mensajeElement.style.display = 'block';
+            mensajeElement.style.color = 'white';
+
+            if (/\.(jpe?g|png|gif)$/i.test(texto)) {
+            const imagen = document.createElement('img');
+            imagen.src = texto;
+            imagen.style.maxWidth = '40%';
+            mensajeElement.appendChild(imagen);
             } else {
-                nuevoMensaje.textContent = texto;
+            mensajeElement.textContent = texto;
             }
 
-            listaMensajes.appendChild(nuevoMensaje);
+            nuevoMensaje.appendChild(usernameElement);
+            nuevoMensaje.appendChild(saltoLinea);
+            nuevoMensaje.appendChild(mensajeElement);
 
+            listaMensajes.appendChild(nuevoMensaje);
             listaMensajes.scrollTop = listaMensajes.scrollHeight;
         }
+        // /////////////////////////////////////////////////////////////////////////////////
+
+        // /////////////////////////////////////////////////////////////////////////////////
+        // Función para validar que ambos campos tengan contenido
+        function validateInput() {
+            const usernameValue = usernameInput.value.trim();
+            const messageValue = input.value.trim();
+
+            if (usernameValue !== '' && messageValue !== '') {
+                enviarMensaje(usernameValue, messageValue);
+                input.value = '';
+                cant_caracteres.innerHTML = `Cantidad de Caracteres: 0`;
+            }
+        }
+        
+        enviar.addEventListener('click', validateInput);
+
+        input.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                validateInput();
+            }
+        });
+        // /////////////////////////////////////////////////////////////////////////////////
+
+        // /////////////////////////////////////////////////////////////////////////////////
+        // Extraer mensajes del api
+        async function obtenerMensajes() {
+            const response = await fetch('https://chat.nrywhite.lat/chats');
+            const data = await response.json();
+
+            console.log(data);
+            // Deconstruccion de lo que viene en el json, no se toma en cuenta el ID
+            data.forEach(({ username, message }) => {
+                renderMensaje(username, message);
+            });
+        }
+      
+      // Cargar mensajes cada 5 segundos
+      setInterval(obtenerMensajes, 5000);
+        // /////////////////////////////////////////////////////////////////////////////////
+
+        // /////////////////////////////////////////////////////////////////////////////////
+        // Agregar mensaje a la lista con usuario y mensaje al api
+        // Función para enviar mensaje al API y renderizarlo
+        async function enviarMensaje(username, texto) {
+            const response = await fetch('https://chat.nrywhite.lat/chats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, message: texto })
+            });
+
+            if (response.status === 201) {
+                console.log('Mensaje enviado con éxito');
+                renderMensaje(username, texto);
+            } else {
+                console.error('Error al enviar el mensaje');
+            }
+        }
+        // /////////////////////////////////////////////////////////////////////////////////
  
     </script>
   </body>
