@@ -328,6 +328,13 @@
                 .mensajes {
                     height: 50vmin;
                     max-height: 50vmin;
+                    font-size: var(--font-size-m);
+                }
+
+                .mensajes #lista-mensajes li {
+                    font-size: var(--font-size-s);
+                    padding: 15px 20px;
+                    margin: 5px 0;
                 }
 
                 /* Menor tamaño en texto */
@@ -338,7 +345,20 @@
                 /* Menor tamaño en campo de texto */
                 .enviar_texto input {
                     width: 100%;
-                    font-size: var(--font-size-m);
+                    font-size: var(--font-size-s);
+                }
+
+                .enviar_texto .texto p {
+                    font-size: var(--font-size-s);
+                }
+
+                .enviar_texto #mensajeError {
+                    font-size: var(--font-size-s);
+                }
+
+                .enviar_texto .texto button {
+                    width: 100%;
+                    font-size: var(--font-size-s);
                 }
             }
         `;
@@ -489,6 +509,7 @@
                 enviarMensaje(usernameValue, messageValue);
                 input.value = '';
                 cant_caracteres.innerHTML = `Cantidad de Caracteres: 0`;
+                mensajeError.style.display = 'none';
             }
         }
         
