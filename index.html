@@ -66,7 +66,7 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                min-height: 100vmin;
+                max-height: 82%;
             }
 
             ul {
@@ -115,16 +115,21 @@
             .mensajes {
                 background-color: var(--tertiary-color);
                 border-radius: var(--border-radius-m);
-                height: 60vmin;
+                height: 40vmin;
                 width: 80vmin;
                 margin: 30px 20px;
                 padding: 20px;
                 border: 2px solid var(--primary-color);
+
+                max-height: 40vmin;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
             }
+                
             /* Enviar texto */
-            /* Fixed Position */
             .enviar_texto {
-                display: fixed;
                 flex-direction: column;
                 justify-content: start;
                 align-items: start;
@@ -142,19 +147,19 @@
             .enviar_texto p {
                 font-size: var(--font-size-m);
                 font-weight: var(--font-weight-semibold);
+                margin-top: 20px;
                 margin-bottom: 10px;
-                margin-left: 5px;
             }
             
             .enviar_texto .texto {
                 display: flex;
                 flex-direction: row;
-                justify-content: space-around;
+                justify-content: space-between;
                 align-items: center;
                 width: 100%;
             }
             
-            .enviar_texto .texto input {
+            input {
                 width: 65%;
                 height: 50px;
                 border-radius: var(--border-radius-s);
@@ -166,7 +171,7 @@
                 transition: 0.5s ease;
             }
 
-            .enviar_texto .texto input:focus {
+            input:focus {
                 outline: none;
                 border: 2px solid var(--secondary-color);
             }
@@ -198,6 +203,48 @@
                 transition: 0.5s ease;
             }
 
+            /* Diseño de cada elemento que entre a la lista */
+            #lista-mensajes::-webkit-scrollbar {
+                margin-left: 50px;
+                width: 10px;
+            }
+
+            #lista-mensajes::-webkit-scrollbar-track {
+                background: var(--secondary-color);
+            }
+            
+            #lista-mensajes::-webkit-scrollbar-thumb {
+                background-color: var(--primary-color);
+                border-radius: var(--border-radius-m);
+            }
+
+            #lista-mensajes {
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                padding: 0 1rem 0 0; /* Deja espacio a la derecha */
+                list-style-type: none;
+                box-sizing: border-box; /* Importante para que el padding no sume ancho extra */
+                justify-content: center;
+            }
+
+            #lista-mensajes li {
+                background: var(--secondary-color);
+                border-radius: var(--border-radius-m);
+                padding: 10px;
+                margin: 10px 0;
+                font-size: var(--font-size-n);
+                font-weight: var(--font-weight-semibold);
+                width: 100%;
+                white-space: normal;
+                overflow-wrap: break-word;
+            }
+            
+            #lista-mensajes img {
+                max-width: 40%;
+                border-radius: var(--border-radius-m);
+            }
+
         `;
         document.head.appendChild(styleElement);
 
@@ -215,6 +262,8 @@
 
             <div class="enviar_texto">
                 <h2>Text Input</h2>
+
+                <input type="text" id="username" placeholder="Username">
 
                 <p>Cantidad de Caracteres: </p>
 
@@ -244,25 +293,50 @@
         });
 
         // Actualizar contador de caracteres
+        const cant_caracteres = document.querySelector('.enviar_texto p');
+        const enviar = document.getElementById('enviar');
+
         input.addEventListener('input', () => {
-            const cant_caracteres = document.querySelector('.enviar_texto p');
             cant_caracteres.innerHTML = `Cantidad de Caracteres: ${input.value.length}`;
         });
 
-        // Funcion de boton enviar mensaje
-        function enviarMensaje(){
-            alert('Mensaje enviado');
+        // Funcion para manejar el input
+        function validateInput(input) {
+            if (input.value.trim() !== '') {
+                enviarMensaje(input.value);
+                input.value = '';
+            }
         }
-
-        const enviar = document.getElementById('enviar');
-        enviar.addEventListener('click', enviarMensaje);
+        enviar.addEventListener('click', () => {
+           validateInput(input);
+        });
 
         // Agregar listener a boton enter para enviar
         input.addEventListener('keyup', (event) => {
             if (event.key === 'Enter') {
-                enviarMensaje();
+                validateInput(input);
             }
         });
+
+        // Agregar mensaje a la lista
+        function enviarMensaje(texto){
+            cant_caracteres.innerHTML = `Cantidad de Caracteres: 0`;
+            const listaMensajes = document.getElementById('lista-mensajes');
+            const nuevoMensaje = document.createElement('li');
+
+            if (/\.(jpe?g|png\gif)$/i.test(texto)) {
+                const imagen = document.createElement('img');
+
+                imagen.src = texto;
+                nuevoMensaje.appendChild(imagen);
+            } else {
+                nuevoMensaje.textContent = texto;
+            }
+
+            listaMensajes.appendChild(nuevoMensaje);
+
+            listaMensajes.scrollTop = listaMensajes.scrollHeight;
+        }
  
     </script>
   </body>
