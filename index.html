@@ -8,6 +8,10 @@
         const title = document.createElement('title');
         title.textContent = 'Ping/Pong';
         document.head.appendChild(title);
+        // UTF-8
+        const charset = document.createElement('meta');
+        charset.setAttribute('charset', 'UTF-8');
+        document.head.appendChild(charset);
         // /////////////////////////////////////////////////////////////////////////////////
         // Generar style
         const styleElement = document.createElement('style');
@@ -24,6 +28,10 @@
                 --primary-color: #007aa2;
                 --secondary-color: #86beda;
                 --tertiary-color: #f5fbff;
+
+                --username-color: #003f5d;
+
+                --even-msg-color: #c5d4eb;
 
                 --error-color: #950606;
 
@@ -146,10 +154,11 @@
             /* Mensajes */
             .mensajes {
                 background-color: var(--tertiary-color);
-                border-radius: var(--border-radius-m);
+                border-radius: var(--border-radius-s);
                 height: 40vmin;
                 width: 80vmin;
-                margin: 30px 20px;
+                margin: 10px 20px;
+                margin-top: 20px;
                 padding: 20px;
                 border: 2px solid var(--primary-color);
 
@@ -174,6 +183,8 @@
                 text-align: center;
                 font-size: var(--font-size-xl);
                 font-weight: var(--font-weight-bold);
+                margin: 0;
+                padding: 0;
             }
 
             .enviar_texto .texto p {
@@ -227,7 +238,7 @@
             .enviar_texto #mensajeError {
                 display: none;
                 color: var(--error-color);
-                font-size: var(--font-size-s);
+                font-size: var(--font-size-m);
                 font-weight: var(--font-weight-bold);
                 margin-top: 5px;
                 transition: 0.5s ease;
@@ -259,10 +270,8 @@
             }
 
             #lista-mensajes li {
-                background: var(--secondary-color);
                 border-radius: var(--border-radius-m);
-                padding: 10px;
-                padding-left: 20px;
+                padding: 20px 30px;
                 margin: 10px 0;
                 font-size: var(--font-size-n);
                 font-weight: var(--font-weight-semibold);
@@ -275,7 +284,58 @@
                 max-width: 40%;
                 border-radius: var(--border-radius-m);
             }
+            
+            #lista-mensajes li:nth-child(2n) {
+                background-color: var(--even-msg-color);
+                text-align: right;
+            }
 
+            #lista-mensajes li:nth-child(2n+1) {
+                background-color: var(--secondary-color);
+                text-align: left;
+            }
+
+            #lista-mensajes li:nth-child(2n+1) .mensaje_element {
+                color: var(--white-color);
+            }
+
+            #lista-mensajes li:nth-child(2n) .mensaje_element {
+                color: var(--header-background);
+            }
+
+            /* Media Queries */
+            @media (max-width: 640px) {
+                /* Esconder la scrollbar */
+                #lista-mensajes::-webkit-scrollbar {
+                    display: none;
+                }
+
+                #lista-mensajes {
+                    padding: 0 0 0 0; 
+                }
+
+                /* tamaño de header */
+                header h1 {
+                    font-size: var(--font-size-xl);
+                }
+                
+                /* Aumentar tamaño lista */
+                .mensajes {
+                    height: 50vmin;
+                    max-height: 50vmin;
+                }
+
+                /* Menor tamaño en texto */
+                .enviar_texto h2 {
+                    font-size: var(--font-size-l);
+                }
+
+                /* Menor tamaño en campo de texto */
+                .enviar_texto input {
+                    width: 100%;
+                    font-size: var(--font-size-m);
+                }
+            }
         `;
         document.head.appendChild(styleElement);
         // /////////////////////////////////////////////////////////////////////////////////
@@ -344,9 +404,9 @@
                 <div class="texto">
                     <input type="text" id="texto" placeholder="Hello World!">
                     <p>Cantidad de Caracteres: 0</p>
+                    <p id="mensajeError">Maximo 140 caracteres!</p>
                     <button id="enviar">Enviar</button>
                 </div>
-                <span id="mensajeError">Maximo 140 caracteres!</span>
                 
             </div>
         `;
@@ -368,6 +428,7 @@
         input.addEventListener('input', () => {
             cant_caracteres.innerHTML = `Cantidad de Caracteres: ${input.value.length}`;
             if (input.value.length > maxCaracteres) {
+                cant_caracteres.innerHTML = `Cantidad de Caracteres: ${maxCaracteres}`;
                 mensajeError.style.display = 'inline';
                 input.value = input.value.slice(0, maxCaracteres);
             } else {
@@ -386,20 +447,22 @@
             const usernameElement = document.createElement('span');
             usernameElement.textContent = username;
             usernameElement.style.fontWeight = 'bold';
+            usernameElement.style.color = 'var(--username-color)';
+            usernameElement.style.textTransform = 'uppercase';
 
             const saltoLinea = document.createElement('br');
 
             const mensajeElement = document.createElement('span');
+            mensajeElement.classList.add('mensaje_element');
             mensajeElement.style.display = 'block';
-            mensajeElement.style.color = 'white';
 
             if (/\.(jpe?g|png|gif)$/i.test(texto)) {
-            const imagen = document.createElement('img');
-            imagen.src = texto;
-            imagen.style.maxWidth = '40%';
-            mensajeElement.appendChild(imagen);
-            } else {
-            mensajeElement.textContent = texto;
+                const imagen = document.createElement('img');
+                imagen.src = texto;
+                imagen.style.maxWidth = '40%';
+                mensajeElement.appendChild(imagen);
+                } else {
+                    mensajeElement.textContent = texto;
             }
 
             nuevoMensaje.appendChild(usernameElement);
@@ -435,18 +498,29 @@
 
         // /////////////////////////////////////////////////////////////////////////////////
         // Extraer mensajes del api
+        let mensajesPrevios = [];
+
         async function obtenerMensajes() {
             const response = await fetch('https://chat.nrywhite.lat/chats');
             const data = await response.json();
 
-            console.log(data);
-            // Deconstruccion de lo que viene en el json, no se toma en cuenta el ID
-            data.forEach(({ username, message }) => {
-                renderMensaje(username, message);
-            });
+            // Compara los datos nuevos con los almacenados previamente
+            if (JSON.stringify(data) !== JSON.stringify(mensajesPrevios)) {
+                // Si hay diferencia, actualiza la lista de mensajes
+                const listaMensajes = document.getElementById('lista-mensajes');
+                listaMensajes.innerHTML = ''; // Limpia los mensajes anteriores
+
+                data.forEach(({ username, message }) => {
+                    renderMensaje(username, message);
+                });
+
+                mensajesPrevios = data; // Actualiza la variable con los datos actuales
+            }
         }
+
+        obtenerMensajes(); //Que se cargue al cargar el DOM
       
-        // Cargar mensajes cada 5 segundos
+        // Cargar mensajes cada 5 segundos, si, hubieron cambios en la base de datos
         setInterval(obtenerMensajes, 5000);
         // /////////////////////////////////////////////////////////////////////////////////
 
@@ -470,7 +544,6 @@
             }
         }
         // /////////////////////////////////////////////////////////////////////////////////
- 
     </script>
   </body>
 </html>
