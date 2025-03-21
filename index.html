@@ -13,7 +13,7 @@
         const styleElement = document.createElement('style');
         styleElement.innerHTML = `
           /* Importar otro tipo de FONT */
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Tektur:wght@400..900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap');
 
             /* Variables */
             :root {
@@ -59,7 +59,7 @@
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
-                font-family: "Poppins", serif;
+                font-family: "Share Tech Mono", monospace;
             }
 
             /* Body para el background */
@@ -109,11 +109,37 @@
             }
 
             header h1 {
-                font-family: "Tektur", serif;
+                font-family: "Press Start 2P";
+                font-size: var(--font-size-xxl);
                 text-align: center;
                 text-transform: uppercase;
                 font-weight: var(--font-weight-bold);
                 margin: 0;
+            }
+            
+            /* Animacion Header */
+            #typewriter {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: baseline;
+            }
+
+            /* Cursor parpadeante */
+            .cursor {
+                display: inline-block;
+                height: 1em;        
+                width: 0.2em;       
+                background-color: var(--primary-color);
+                animation: blink 0.6s steps(1) infinite;
+                margin-left: 3px;
+                vertical-align: text-bottom; 
+            }
+
+            @keyframes blink {
+                0% { opacity: 1; }
+                50% { opacity: 0; }
+                100% { opacity: 1; }
             }
 
             /* Main */
@@ -137,20 +163,20 @@
             /* Enviar texto */
             .enviar_texto {
                 flex-direction: column;
-                justify-content: start;
-                align-items: start;
+                justify-content: center;
+                align-items: center;
                 height: 50vmin;
                 width: 80vmin;
                 margin: 0px 20px;
             }
             
             .enviar_texto h2 {
-                font-size: var(--font-size-l);
+                text-align: center;
+                font-size: var(--font-size-xl);
                 font-weight: var(--font-weight-bold);
-                margin-bottom: 5px;
             }
 
-            .enviar_texto p {
+            .enviar_texto .texto p {
                 font-size: var(--font-size-m);
                 font-weight: var(--font-weight-semibold);
                 margin-top: 20px;
@@ -159,10 +185,8 @@
             
             .enviar_texto .texto {
                 display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
+                flex-direction: column;
+                
             }
             
             input {
@@ -173,7 +197,7 @@
                 padding: 0 10px;
                 font-size: var(--font-size-m);
                 font-weight: var(--font-weight-medium);
-
+                margin: 20px 0 0 0;
                 transition: 0.5s ease;
             }
 
@@ -190,7 +214,7 @@
                 color: var(--white-color);
                 font-size: var(--font-size-m);
                 font-weight: var(--font-weight-bold);
-
+                margin: 10px 0 0 0;
                 transition: 0.5s ease;
             }
 
@@ -257,7 +281,50 @@
         // /////////////////////////////////////////////////////////////////////////////////
 
         // /////////////////////////////////////////////////////////////////////////////////
-        
+        // Generar header
+        const headerElement = document.createElement('header');
+        headerElement.innerHTML = `
+            <div id = "typewriter"></div>
+        `;
+        document.body.appendChild(headerElement);
+
+        //Texto fijo
+        const texto_fijo = "PING";
+        //Texto dinamico
+        const texto_dinamico = "/PONG";
+
+        //Tiempo entre letrea
+        const intervalo = 800;
+
+        const typewriter = document.getElementById("typewriter");
+
+        //Fijo
+        const h1_fijo = document.createElement("h1");
+        h1_fijo.textContent = texto_fijo;
+        h1_fijo.style.color = "var(--white-color)";
+        typewriter.appendChild(h1_fijo);
+
+        //Dinamico
+        const h1_dinamico = document.createElement("h1");
+        h1_dinamico.style.color = "var(--primary-color)";
+        typewriter.appendChild(h1_dinamico);
+
+        // Cursor
+        const cursor = document.createElement("h1");
+        cursor.classList.add("cursor");
+        typewriter.appendChild(cursor);
+
+        let currentIndex = 0;
+
+        function typeLetter() {
+            if (currentIndex < texto_dinamico.length) {
+                h1_dinamico.textContent += texto_dinamico[currentIndex];
+                currentIndex++;
+                setTimeout(typeLetter, intervalo);
+            } 
+        }
+
+        typeLetter();
 
         // /////////////////////////////////////////////////////////////////////////////////
 
@@ -270,14 +337,13 @@
             </div>
 
             <div class="enviar_texto">
-                <h2>Text Input</h2>
+                <h2>Nuevo Mensaje</h2>
 
                 <input type="text" id="username" placeholder="Username">
 
-                <p>Cantidad de Caracteres: </p>
-
                 <div class="texto">
                     <input type="text" id="texto" placeholder="Hello World!">
+                    <p>Cantidad de Caracteres: 0</p>
                     <button id="enviar">Enviar</button>
                 </div>
                 <span id="mensajeError">Maximo 140 caracteres!</span>
@@ -292,7 +358,7 @@
         const usernameInput = document.getElementById('username');
         const input = document.getElementById('texto');
         const mensajeError = document.getElementById('mensajeError');
-        const cant_caracteres = document.querySelector('.enviar_texto p');
+        const cant_caracteres = document.querySelector('.enviar_texto .texto p');
         const enviar = document.getElementById('enviar');
         const maxCaracteres = 140;
         // /////////////////////////////////////////////////////////////////////////////////
@@ -380,8 +446,8 @@
             });
         }
       
-      // Cargar mensajes cada 5 segundos
-      setInterval(obtenerMensajes, 5000);
+        // Cargar mensajes cada 5 segundos
+        setInterval(obtenerMensajes, 5000);
         // /////////////////////////////////////////////////////////////////////////////////
 
         // /////////////////////////////////////////////////////////////////////////////////
